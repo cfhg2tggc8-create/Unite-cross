@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
+    >
+    <title>UNITE Match Cross Finder</title>
+
+    <style>
+        :root {
+            --background: #f3f5f9;
+            --card: #ffffff;
+            --primary: #6d3df5;
+            --primary-dark: #5126ca;
+            --text: #1d2433;
+            --subtext: #687083;
+            --border: #dfe3eb;
+            --shadow: 0 8px 24px rgba(30, 39, 58, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        .header {
+            padding:
+                calc(24px + env(safe-area-inset-top))
+                20px
+                28px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #3e217c 0%,
+                    #6d3df5 58%,
+                    #8e67ff 100%
+                );
+            color: #ffffff;
+        }
+
+        .header-inner {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .app-name {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.25;
+            letter-spacing: -0.4px;
+        }
+
+        .app-description {
+            margin: 10px 0 0;
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .container {
+            width: min(100%, 760px);
+            margin: 0 auto;
+            padding:
+                22px
+                16px
+                calc(34px + env(safe-area-inset-bottom));
+        }
+
+        .notice {
+            margin-bottom: 18px;
+            padding: 14px 16px;
+            background: #fff8dc;
+            border: 1px solid #ecd98d;
+            border-radius: 14px;
+            color: #69581c;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .menu-card {
+            display: block;
+            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .menu-card.disabled {
+            opacity: 0.68;
+        }
+
+        .menu-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            margin-bottom: 13px;
+            border-radius: 10px;
+            background: #efeaff;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .menu-title {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        .menu-description {
+            margin: 8px 0 0;
+            color: var(--subtext);
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        .status {
+            display: inline-block;
+            margin-top: 13px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: #eef0f5;
+            color: #61697a;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status.active {
+            background: #e7ddff;
+            color: var(--primary-dark);
+        }
+
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            color: #858c9b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        @media (min-width: 620px) {
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .menu-card {
+                min-height: 205px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <h1 class="app-name">UNITE Match Cross Finder</h1>
+
+            <p class="app-description">
+                公開されている対戦履歴を横断して、
+                指定プレイヤーが参加した可能性のある試合を照合します。
+            </p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="notice">
+            非公開プロフィールを直接取得する機能ではありません。
+            公開プレイヤー側に確認できる試合情報だけを利用します。
+        </div>
+
+        <section class="menu-grid">
+            <a class="menu-card" href="/search">
+                <div class="menu-number">1</div>
+                <h2 class="menu-title">クロス検索</h2>
+                <p class="menu-description">
+                    対象プレイヤー名と期間を指定して、
+                    保存済みの試合履歴から一致する試合を検索します。
+                </p>
+                <span class="status active">開発中</span>
+            </a>
+
+            <a class="menu-card" href="/data">
+                <div class="menu-number">2</div>
+                <h2 class="menu-title">データ管理</h2>
+                <p class="menu-description">
+                    CSV・JSON形式の試合データを取り込み、
+                    保存件数や取得元を管理します。
+                </p>
+                <span class="status">準備中</span>
+            </a>
+
+            <a class="menu-card" href="/sources">
+                <div class="menu-number">3</div>
+                <h2 class="menu-title">UniteAPI取得元</h2>
+                <p class="menu-description">
+                    調査対象となる公開プレイヤーを登録し、
+                    履歴取得の状態を確認します。
+                </p>
+                <span class="status">準備中</span>
+            </a>
+
+            <a class="menu-card" href="/statistics">
+                <div class="menu-number">4</div>
+                <h2 class="menu-title">統計</h2>
+                <p class="menu-description">
+                    同じプレイヤーとのマッチ回数や日時、
+                    チーム構成の傾向を集計します。
+                </p>
+                <span class="status">準備中</span>
+            </a>
+        </section>
+
+        <div class="footer">
+            UNITE Match Cross Finder<br>
+            Public match data cross-reference tool
+        </div>
+    </main>
+</body>
+</html>
