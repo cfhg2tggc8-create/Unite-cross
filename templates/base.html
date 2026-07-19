@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
+    >
+
+    <title>{% block title %}UNITE Match Cross Finder{% endblock %}</title>
+
+    <style>
+        :root {
+            --background: #f3f5f9;
+            --card: #ffffff;
+            --primary: #6d3df5;
+            --primary-dark: #5126ca;
+            --text: #1d2433;
+            --subtext: #687083;
+            --border: #dfe3eb;
+            --success: #16834a;
+            --danger: #b42318;
+            --warning-bg: #fff8dc;
+            --warning-border: #ecd98d;
+            --warning-text: #69581c;
+            --shadow: 0 8px 24px rgba(30, 39, 58, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        .header {
+            padding:
+                calc(18px + env(safe-area-inset-top))
+                18px
+                22px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #3e217c 0%,
+                    #6d3df5 58%,
+                    #8e67ff 100%
+                );
+
+            color: #ffffff;
+        }
+
+        .header-inner {
+            width: min(100%, 760px);
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .page-description {
+            margin-top: 8px;
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .container {
+            width: min(100%, 760px);
+            margin: 0 auto;
+            padding:
+                20px
+                16px
+                calc(34px + env(safe-area-inset-bottom));
+        }
+
+        .alert {
+            margin-bottom: 18px;
+            padding: 15px 16px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.65;
+        }
+
+        .alert-success {
+            background: #eaf8f0;
+            border: 1px solid #9bd6b5;
+            color: #126b3b;
+        }
+
+        .alert-error {
+            background: #fff0ef;
+            border: 1px solid #efaaa5;
+            color: #9b241b;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .summary-card {
+            padding: 18px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .summary-label {
+            margin: 0;
+            color: var(--subtext);
+            font-size: 12px;
+        }
+
+        .summary-value {
+            margin-top: 8px;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .card {
+            margin-bottom: 18px;
+            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        .card-description {
+            margin: 0 0 18px;
+            color: var(--subtext);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 12px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .button {
+            width: 100%;
+            margin-top: 14px;
+            padding: 14px 18px;
+            border: 0;
+            border-radius: 12px;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: var(--primary-dark);
+        }
+
+        .button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+        }
+
+        .status-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .status-item:last-child {
+            border-bottom: 0;
+        }
+
+        .status-value {
+            font-weight: 800;
+        }
+
+        .status-ok {
+            color: var(--success);
+        }
+
+        .notice {
+            padding: 14px 16px;
+            border: 1px solid var(--warning-border);
+            border-radius: 12px;
+            background: var(--warning-bg);
+            color: var(--warning-text);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 520px) {
+            .page-title {
+                font-size: 24px;
+            }
+
+            .summary-value {
+                font-size: 24px;
+            }
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+
+<body>
+    {% block header %}{% endblock %}
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
