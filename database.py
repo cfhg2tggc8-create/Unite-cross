@@ -27,6 +27,7 @@ def initialize_database():
             game_mode TEXT,
             source_player TEXT,
             source_type TEXT NOT NULL DEFAULT 'manual',
+            source_url TEXT,
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
 
@@ -34,18 +35,24 @@ def initialize_database():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             match_id INTEGER NOT NULL,
             player_name TEXT NOT NULL,
+            normalized_name TEXT NOT NULL,
             team_number INTEGER,
             pokemon_name TEXT,
+            result TEXT,
             FOREIGN KEY (match_id)
                 REFERENCES matches (id)
-                ON DELETE CASCADE
+                ON DELETE CASCADE,
+            UNIQUE (match_id, normalized_name)
         );
 
-        CREATE INDEX IF NOT EXISTS idx_match_datetime
+        CREATE INDEX IF NOT EXISTS idx_matches_datetime
         ON matches (match_datetime);
 
-        CREATE INDEX IF NOT EXISTS idx_player_name
-        ON match_players (player_name);
+        CREATE INDEX IF NOT EXISTS idx_matches_source_player
+        ON matches (source_player);
+
+        CREATE INDEX IF NOT EXISTS idx_match_players_name
+        ON match_players (normalized_name);
 
         CREATE INDEX IF NOT EXISTS idx_match_players_match_id
         ON match_players (match_id);
@@ -79,3 +86,7 @@ def get_database_counts():
         "match_count": match_count,
         "player_count": player_count,
     }
+
+
+def normalize_player_name(player_name):
+    return player_name.strip().casefold()
