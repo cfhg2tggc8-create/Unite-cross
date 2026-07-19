@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
+    >
+
+    <title>データ管理 | UNITE Match Cross Finder</title>
+
+    <style>
+        :root {
+            --background: #f3f5f9;
+            --card: #ffffff;
+            --primary: #6d3df5;
+            --primary-dark: #5126ca;
+            --text: #1d2433;
+            --subtext: #687083;
+            --border: #dfe3eb;
+            --success: #16834a;
+            --warning-bg: #fff8dc;
+            --warning-border: #ecd98d;
+            --warning-text: #69581c;
+            --shadow: 0 8px 24px rgba(30, 39, 58, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        .header {
+            padding:
+                calc(18px + env(safe-area-inset-top))
+                18px
+                22px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #3e217c 0%,
+                    #6d3df5 58%,
+                    #8e67ff 100%
+                );
+            color: #ffffff;
+        }
+
+        .header-inner {
+            width: min(100%, 760px);
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.3;
+        }
+
+        .page-description {
+            margin: 9px 0 0;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        .container {
+            width: min(100%, 760px);
+            margin: 0 auto;
+            padding:
+                20px
+                16px
+                calc(34px + env(safe-area-inset-bottom));
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .summary-card {
+            padding: 18px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .summary-label {
+            margin: 0;
+            color: var(--subtext);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .summary-value {
+            margin: 7px 0 0;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .card {
+            margin-bottom: 18px;
+            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        .card-description {
+            margin: 8px 0 18px;
+            color: var(--subtext);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .format-list {
+            margin: 0 0 18px;
+            padding-left: 20px;
+            color: var(--subtext);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px dashed #b9bfcb;
+            border-radius: 12px;
+            background: #fafbfc;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .upload-button {
+            width: 100%;
+            min-height: 52px;
+            margin-top: 14px;
+            border: 0;
+            border-radius: 14px;
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary-dark),
+                    var(--primary)
+                );
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .notice {
+            padding: 15px 16px;
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-radius: 14px;
+            color: var(--warning-text);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+            color: var(--success);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        @media (max-width: 420px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a class="back-link" href="/">← トップへ戻る</a>
+
+            <h1 class="page-title">データ管理</h1>
+
+            <p class="page-description">
+                試合履歴の保存状況を確認し、
+                JSON・CSV形式のデータを取り込みます。
+            </p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="summary-grid">
+            <div class="summary-card">
+                <p class="summary-label">保存済み試合数</p>
+                <p class="summary-value">{{ match_count }}</p>
+            </div>
+
+            <div class="summary-card">
+                <p class="summary-label">参加者レコード数</p>
+                <p class="summary-value">{{ player_count }}</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2 class="card-title">JSONデータを取り込む</h2>
+
+            <p class="card-description">
+                複数試合をまとめたJSONファイルをアップロードします。
+                同じmatch_keyの試合は重複登録しません。
+            </p>
+
+            <ul class="format-list">
+                <li>マッチ識別子</li>
+                <li>マッチ日時</li>
+                <li>ゲームモード</li>
+                <li>参加プレイヤー名</li>
+                <li>チーム番号</li>
+                <li>使用ポケモン</li>
+            </ul>
+
+            <form
+                action="/data/import-json"
+                method="post"
+                enctype="multipart/form-data"
+            >
+                <input
+                    type="file"
+                    name="json_file"
+                    accept=".json,application/json"
+                    required
+                >
+
+                <button class="upload-button" type="submit">
+                    JSONファイルを取り込む
+                </button>
+            </form>
+
+            <div class="status">
+                <span class="status-dot"></span>
+                データベース接続は正常です
+            </div>
+        </section>
+
+        <section class="card">
+            <h2 class="card-title">CSVデータを取り込む</h2>
+
+            <p class="card-description">
+                CSV取込機能はJSON取込の動作確認後に追加します。
+            </p>
+
+            <div class="notice">
+                まずJSON形式で登録処理を完成させ、
+                その後にCSV形式へ対応します。
+            </div>
+        </section>
+
+        <div class="notice">
+            Renderの無料環境では、再起動や再デプロイによって
+            ローカルSQLiteファイルが失われる可能性があります。
+            永続保存への対応は、取込機能の完成後に追加します。
+        </div>
+    </main>
+</body>
+</html>
