@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 
 from database import get_database_counts, initialize_database
+from json_importer import JsonImportError, import_json_file
 
 
 app = Flask(__name__)
@@ -37,11 +38,60 @@ def search():
 def data():
     counts = get_database_counts()
 
+    message = request.args.get("message", "").strip()
+    error = request.args.get("error", "").strip()
+
     return render_template(
         "data.html",
         match_count=counts["match_count"],
         player_count=counts["player_count"],
+        message=message,
+        error=error,
     )
+
+
+@app.route("/data/import-json", methods=["POST"])
+def import_json():
+    json_file = request.files.get("json_file")
+
+    try:
+        result = import_json_file(json_file)
+
+        message = (
+            f'{result["inserted_matches"]}試合を登録しました。'
+            f'{result["inserted_players"]}件の参加者データを保存しました。'
+        )
+
+        if result["skipped_matches"]:
+            message += (
+                f' 重複していた{result["skipped_matches"]}試合は'
+                "登録を省略しました。"
+            )
+
+        return redirect(
+            url_for(
+                "data",
+                message=message,
+            )
+        )
+
+    except JsonImportError as exc:
+        return redirect(
+            url_for(
+                "data",
+                error=str(exc),
+            )
+        )
+
+    except Exception:
+        app.logger.exception("JSON import failed")
+
+        return redirect(
+            url_for(
+                "data",
+                error="JSON取込中に予期しないエラーが発生しました。",
+            )
+        )
 
 
 @app.route("/sources")
