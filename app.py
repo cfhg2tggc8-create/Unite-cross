@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -10,11 +10,22 @@ def index():
 
 @app.route("/search")
 def search():
-    return """
-    <h1>クロス検索</h1>
-    <p>この機能は次の工程で作成します。</p>
-    <p><a href="/">トップへ戻る</a></p>
-    """
+    player = request.args.get("player", "").strip()
+    start_date = request.args.get("start_date", "").strip()
+    end_date = request.args.get("end_date", "").strip()
+    relation = request.args.get("relation", "all").strip()
+
+    if relation not in {"all", "ally", "opponent"}:
+        relation = "all"
+
+    return render_template(
+        "search.html",
+        player=player,
+        start_date=start_date,
+        end_date=end_date,
+        relation=relation,
+        searched=bool(player),
+    )
 
 
 @app.route("/data")
