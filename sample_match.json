@@ -1,0 +1,39 @@
+{
+  "matches": [
+    {
+      "match_key": "test_match_001",
+      "match_datetime": "2026-07-20T20:00:00+09:00",
+      "game_mode": "ranked",
+      "source_player": "TEST_PLAYER",
+      "source_type": "json",
+      "source_url": "",
+
+      "players": [
+        {
+          "name": "Alice",
+          "team": 1,
+          "pokemon": "ピカチュウ",
+          "result": "win"
+        },
+        {
+          "name": "Bob",
+          "team": 1,
+          "pokemon": "リザードン",
+          "result": "win"
+        },
+        {
+          "name": "Charlie",
+          "team": 2,
+          "pokemon": "カメックス",
+          "result": "lose"
+        },
+        {
+          "name": "David",
+          "team": 2,
+          "pokemon": "フシギバナ",
+          "result": "lose"
+        }
+      ]
+    }
+  ]
+}
