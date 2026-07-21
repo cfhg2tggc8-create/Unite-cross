@@ -102,7 +102,7 @@ def import_json():
                 error="JSON取込中に予期しないエラーが発生しました。",
             )
         )
-        @app.route("/sources")
+@app.route("/sources")
 def sources():
     return """
     <h1>UniteAPI取得元</h1>
