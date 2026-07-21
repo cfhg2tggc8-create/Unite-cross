@@ -113,7 +113,8 @@ def search_player_matches(player_name):
     ).fetchall()
 
     results = []
-        for row in rows:
+
+    for row in rows:
         players = connection.execute(
             """
             SELECT
@@ -147,4 +148,3 @@ def search_player_matches(player_name):
     connection.close()
 
     return results
-    
