@@ -2,355 +2,179 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1, viewport-fit=cover"
-    >
-
-    <title>クロス検索 | UNITE Match Cross Finder</title>
+    <title>プレイヤー検索</title>
 
     <style>
-        :root {
-            --background: #f3f5f9;
-            --card: #ffffff;
-            --primary: #6d3df5;
-            --primary-dark: #5126ca;
-            --text: #1d2433;
-            --subtext: #687083;
-            --border: #dfe3eb;
-            --danger: #b42318;
-            --shadow: 0 8px 24px rgba(30, 39, 58, 0.08);
+
+        body{
+            margin:0;
+            background:#f3f5f9;
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
+        header{
+            padding:22px;
+            background:#6d3df5;
+            color:white;
         }
 
-        body {
-            margin: 0;
-            background: var(--background);
-            color: var(--text);
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
+        .container{
+            max-width:760px;
+            margin:auto;
+            padding:20px;
         }
 
-        .header {
-            padding:
-                calc(18px + env(safe-area-inset-top))
-                18px
-                22px;
-            background:
-                linear-gradient(
-                    135deg,
-                    #3e217c 0%,
-                    #6d3df5 58%,
-                    #8e67ff 100%
-                );
-            color: #ffffff;
+        .card{
+            background:white;
+            border-radius:14px;
+            padding:20px;
+            margin-bottom:18px;
+            box-shadow:0 4px 14px rgba(0,0,0,.08);
         }
 
-        .header-inner {
-            width: min(100%, 760px);
-            margin: 0 auto;
+        input{
+            width:100%;
+            padding:12px;
+            font-size:16px;
+            border-radius:10px;
+            border:1px solid #ddd;
+            margin-bottom:12px;
+            box-sizing:border-box;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-bottom: 14px;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-            font-weight: 700;
-            text-decoration: none;
+        button{
+            width:100%;
+            padding:14px;
+            border:none;
+            border-radius:10px;
+            background:#6d3df5;
+            color:white;
+            font-size:16px;
+            font-weight:bold;
         }
 
-        .page-title {
-            margin: 0;
-            font-size: 28px;
-            line-height: 1.3;
+        .match{
+            border-top:1px solid #eee;
+            padding-top:16px;
+            margin-top:16px;
         }
 
-        .page-description {
-            margin: 9px 0 0;
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 14px;
-            line-height: 1.65;
+        .player{
+            padding:4px 0;
         }
 
-        .container {
-            width: min(100%, 760px);
-            margin: 0 auto;
-            padding:
-                20px
-                16px
-                calc(34px + env(safe-area-inset-bottom));
-        }
-
-        .card {
-            padding: 20px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            box-shadow: var(--shadow);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 800;
-        }
-
-        .required {
-            margin-left: 5px;
-            color: var(--danger);
-            font-size: 12px;
-        }
-
-        .help {
-            margin: 7px 0 0;
-            color: var(--subtext);
-            font-size: 12px;
-            line-height: 1.55;
-        }
-
-        input,
-        select {
-            width: 100%;
-            min-height: 50px;
-            padding: 12px 14px;
-            border: 1px solid #cfd4df;
-            border-radius: 12px;
-            background: #ffffff;
-            color: var(--text);
-            font: inherit;
-            font-size: 16px;
-            outline: none;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(109, 61, 245, 0.13);
-        }
-
-        .date-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 14px;
-        }
-
-        .submit-button {
-            width: 100%;
-            min-height: 54px;
-            margin-top: 6px;
-            border: 0;
-            border-radius: 14px;
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--primary-dark),
-                    var(--primary)
-                );
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 800;
-            cursor: pointer;
-        }
-
-        .submit-button:active {
-            transform: scale(0.99);
-        }
-
-        .notice {
-            margin-top: 18px;
-            padding: 15px 16px;
-            background: #fff8dc;
-            border: 1px solid #ecd98d;
-            border-radius: 14px;
-            color: #69581c;
-            font-size: 13px;
-            line-height: 1.65;
-        }
-
-        .result-card {
-            margin-top: 18px;
-            padding: 20px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            box-shadow: var(--shadow);
-        }
-
-        .result-title {
-            margin: 0 0 8px;
-            font-size: 18px;
-        }
-
-        .result-text {
-            margin: 0;
-            color: var(--subtext);
-            font-size: 14px;
-            line-height: 1.65;
-        }
-
-        @media (min-width: 620px) {
-            .date-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
     </style>
+
 </head>
 
 <body>
-    <header class="header">
-        <div class="header-inner">
-            <a class="back-link" href="/">← トップへ戻る</a>
 
-            <h1 class="page-title">クロス検索</h1>
+<header>
 
-            <p class="page-description">
-                対象プレイヤー名と期間を指定して、
-                保存されている試合履歴を横断検索します。
-            </p>
-        </div>
-    </header>
+<h1>プレイヤー検索</h1>
 
-    <main class="container">
-        <section class="card">
-            <form action="/search" method="get">
-                <div class="form-group">
-                    <label class="label" for="player">
-                        対象プレイヤー名
-                        <span class="required">必須</span>
-                    </label>
+</header>
 
-                    <input
-                        id="player"
-                        name="player"
-                        type="text"
-                        placeholder="例：JENIFAR"
-                        value="{{ player }}"
-                        required
-                        autocomplete="off"
-                    >
+<div class="container">
 
-                    <p class="help">
-                        大文字・小文字は区別せずに検索します。
-                    </p>
-                </div>
+<div class="card">
 
-                <div class="form-group">
-                    <div class="date-grid">
-                        <div>
-                            <label class="label" for="start_date">
-                                開始日
-                            </label>
+<form method="get">
 
-                            <input
-                                id="start_date"
-                                name="start_date"
-                                type="date"
-                                value="{{ start_date }}"
-                            >
-                        </div>
+<input
+type="text"
+name="player"
+placeholder="プレイヤー名"
+value="{{ player }}"
+required>
 
-                        <div>
-                            <label class="label" for="end_date">
-                                終了日
-                            </label>
+<button type="submit">
 
-                            <input
-                                id="end_date"
-                                name="end_date"
-                                type="date"
-                                value="{{ end_date }}"
-                            >
-                        </div>
-                    </div>
+検索
 
-                    <p class="help">
-                        空欄の場合は、保存されている全期間を検索します。
-                    </p>
-                </div>
+</button>
 
-                <div class="form-group">
-                    <label class="label" for="relation">
-                        試合内での関係
-                    </label>
+</form>
 
-                    <select id="relation" name="relation">
-                        <option
-                            value="all"
-                            {% if relation == "all" %}selected{% endif %}
-                        >
-                            味方・相手の両方
-                        </option>
+</div>
 
-                        <option
-                            value="ally"
-                            {% if relation == "ally" %}selected{% endif %}
-                        >
-                            同じチームのみ
-                        </option>
+{% if searched %}
 
-                        <option
-                            value="opponent"
-                            {% if relation == "opponent" %}selected{% endif %}
-                        >
-                            相手チームのみ
-                        </option>
-                    </select>
-                </div>
+<div class="card">
 
-                <button class="submit-button" type="submit">
-                    一致する試合を検索
-                </button>
-            </form>
-        </section>
+<h2>
 
-        <div class="notice">
-            現在は検索画面の動作確認段階です。
-            次の工程で試合データの保存と照合処理を接続します。
-        </div>
+検索結果
 
-        {% if searched %}
-            <section class="result-card">
-                <h2 class="result-title">検索条件を受け付けました</h2>
+</h2>
+{% if results %}
 
-                <p class="result-text">
-                    対象プレイヤー：
-                    <strong>{{ player }}</strong>
-                    <br>
+{% for match in results %}
 
-                    期間：
-                    {{ start_date or "指定なし" }}
-                    〜
-                    {{ end_date or "指定なし" }}
-                    <br>
+<div class="match">
 
-                    検索対象：
-                    {% if relation == "ally" %}
-                        同じチームのみ
-                    {% elif relation == "opponent" %}
-                        相手チームのみ
-                    {% else %}
-                        味方・相手の両方
-                    {% endif %}
-                </p>
-            </section>
-        {% endif %}
-    </main>
+<strong>
+
+{{ match.match_datetime }}
+
+</strong>
+
+<br>
+
+<small>
+
+{{ match.match_key }}
+
+</small>
+
+<div style="margin-top:10px;">
+
+{% for player in match.players %}
+
+<div class="player">
+
+{{ player.player_name }}
+
+{% if player.pokemon_name %}
+（{{ player.pokemon_name }}）
+{% endif %}
+
+{% if player.team_number %}
+- Team {{ player.team_number }}
+{% endif %}
+
+{% if player.result %}
+- {{ player.result }}
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>
+
+該当する試合はありませんでした。
+
+</p>
+
+{% endif %}
+
+</div>
+
+{% endif %}
+
+</div>
+
 </body>
+
 </html>
