@@ -28,10 +28,10 @@ def search():
     if relation not in {"all", "ally", "opponent"}:
         relation = "all"
 
-    results = []
+    search_result = None
 
     if player:
-        results = search_player_matches(player)
+        search_result = search_player_matches(player)
 
     return render_template(
         "search.html",
@@ -40,7 +40,7 @@ def search():
         end_date=end_date,
         relation=relation,
         searched=bool(player),
-        results=results,
+        search_result=search_result,
     )
 
 
@@ -102,6 +102,8 @@ def import_json():
                 error="JSON取込中に予期しないエラーが発生しました。",
             )
         )
+
+
 @app.route("/sources")
 def sources():
     return """
