@@ -4,6 +4,7 @@ from database import (
     get_database_counts,
     initialize_database,
     search_player_matches,
+    search_cross_matches,
 )
 from json_importer import JsonImportError, import_json_file
 
@@ -43,7 +44,26 @@ def search():
         search_result=search_result,
     )
 
+@app.route("/cross")
+def cross():
 
+    player1 = request.args.get("player1", "").strip()
+    player2 = request.args.get("player2", "").strip()
+
+    result = None
+
+    if player1 and player2:
+        result = search_cross_matches(
+            player1,
+            player2,
+        )
+
+    return render_template(
+        "cross.html",
+        player1=player1,
+        player2=player2,
+        result=result,
+    )
 @app.route("/data")
 def data():
     counts = get_database_counts()
