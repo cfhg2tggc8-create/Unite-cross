@@ -90,3 +90,61 @@ def get_database_counts():
 
 def normalize_player_name(player_name):
     return player_name.strip().casefold()
+
+
+def search_player_matches(player_name):
+    normalized_name = normalize_player_name(player_name)
+
+    connection = get_db_connection()
+
+    rows = connection.execute(
+        """
+        SELECT
+            m.id,
+            m.match_datetime,
+            m.match_key
+        FROM matches m
+        INNER JOIN match_players mp
+            ON mp.match_id = m.id
+        WHERE mp.normalized_name = ?
+        ORDER BY m.match_datetime DESC
+        """,
+        (normalized_name,),
+    ).fetchall()
+
+    results = []
+        for row in rows:
+        players = connection.execute(
+            """
+            SELECT
+                player_name,
+                pokemon_name,
+                team_number,
+                result
+            FROM match_players
+            WHERE match_id = ?
+            ORDER BY team_number, player_name
+            """,
+            (row["id"],),
+        ).fetchall()
+
+        results.append(
+            {
+                "match_key": row["match_key"],
+                "match_datetime": row["match_datetime"],
+                "players": [
+                    {
+                        "player_name": player["player_name"],
+                        "pokemon_name": player["pokemon_name"],
+                        "team_number": player["team_number"],
+                        "result": player["result"],
+                    }
+                    for player in players
+                ],
+            }
+        )
+
+    connection.close()
+
+    return results
+    
