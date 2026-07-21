@@ -94,57 +94,160 @@ def normalize_player_name(player_name):
 
 def search_player_matches(player_name):
     normalized_name = normalize_player_name(player_name)
-
     connection = get_db_connection()
 
-    rows = connection.execute(
+    target_player = connection.execute(
+        """
+        SELECT player_name
+        FROM match_players
+        WHERE normalized_name = ?
+        ORDER BY id
+        LIMIT 1
+        """,
+        (normalized_name,),
+    ).fetchone()
+
+    if target_player is None:
+        connection.close()
+
+        return {
+            "player_name": player_name,
+            "match_count": 0,
+            "ally_count": 0,
+            "opponent_count": 0,
+            "allies": [],
+            "opponents": [],
+            "matches": [],
+        }
+
+    match_rows = connection.execute(
         """
         SELECT
             m.id,
             m.match_datetime,
-            m.match_key
+            m.match_key,
+            m.game_mode,
+            target.team_number AS target_team
         FROM matches m
-        INNER JOIN match_players mp
-            ON mp.match_id = m.id
-        WHERE mp.normalized_name = ?
+        INNER JOIN match_players target
+            ON target.match_id = m.id
+        WHERE target.normalized_name = ?
         ORDER BY m.match_datetime DESC
         """,
         (normalized_name,),
     ).fetchall()
 
-    results = []
+    matches = []
+    ally_counts = {}
+    opponent_counts = {}
 
-    for row in rows:
-        players = connection.execute(
+    for match_row in match_rows:
+        player_rows = connection.execute(
             """
             SELECT
                 player_name,
+                normalized_name,
                 pokemon_name,
                 team_number,
                 result
             FROM match_players
             WHERE match_id = ?
-            ORDER BY team_number, player_name
+            ORDER BY
+                CASE
+                    WHEN team_number IS NULL THEN 3
+                    ELSE team_number
+                END,
+                player_name
             """,
-            (row["id"],),
+            (match_row["id"],),
         ).fetchall()
 
-        results.append(
+        players = []
+
+        for player_row in player_rows:
+            is_target = (
+                player_row["normalized_name"] == normalized_name
+            )
+
+            relation = "unknown"
+
+            if is_target:
+                relation = "target"
+            elif (
+                match_row["target_team"] is not None
+                and player_row["team_number"] is not None
+            ):
+                if (
+                    player_row["team_number"]
+                    == match_row["target_team"]
+                ):
+                    relation = "ally"
+                else:
+                    relation = "opponent"
+
+            if not is_target:
+                player_key = player_row["normalized_name"]
+
+                if relation == "ally":
+                    if player_key not in ally_counts:
+                        ally_counts[player_key] = {
+                            "player_name": player_row["player_name"],
+                            "count": 0,
+                        }
+
+                    ally_counts[player_key]["count"] += 1
+
+                elif relation == "opponent":
+                    if player_key not in opponent_counts:
+                        opponent_counts[player_key] = {
+                            "player_name": player_row["player_name"],
+                            "count": 0,
+                        }
+
+                    opponent_counts[player_key]["count"] += 1
+
+            players.append(
+                {
+                    "player_name": player_row["player_name"],
+                    "pokemon_name": player_row["pokemon_name"],
+                    "team_number": player_row["team_number"],
+                    "result": player_row["result"],
+                    "relation": relation,
+                    "is_target": is_target,
+                }
+            )
+
+        matches.append(
             {
-                "match_key": row["match_key"],
-                "match_datetime": row["match_datetime"],
-                "players": [
-                    {
-                        "player_name": player["player_name"],
-                        "pokemon_name": player["pokemon_name"],
-                        "team_number": player["team_number"],
-                        "result": player["result"],
-                    }
-                    for player in players
-                ],
+                "match_key": match_row["match_key"],
+                "match_datetime": match_row["match_datetime"],
+                "game_mode": match_row["game_mode"],
+                "target_team": match_row["target_team"],
+                "players": players,
             }
         )
 
+    allies = sorted(
+        ally_counts.values(),
+        key=lambda item: (-item["count"], item["player_name"].casefold()),
+    )
+
+    opponents = sorted(
+        opponent_counts.values(),
+        key=lambda item: (-item["count"], item["player_name"].casefold()),
+    )
+
+    ally_count = sum(item["count"] for item in allies)
+    opponent_count = sum(item["count"] for item in opponents)
+
     connection.close()
 
-    return results
+    return {
+        "player_name": target_player["player_name"],
+        "match_count": len(matches),
+        "ally_count": ally_count,
+        "opponent_count": opponent_count,
+        "allies": allies,
+        "opponents": opponents,
+        "matches": matches,
+    }
