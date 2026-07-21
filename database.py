@@ -251,3 +251,90 @@ def search_player_matches(player_name):
         "opponents": opponents,
         "matches": matches,
     }
+def search_cross_matches(player1, player2):
+    player1 = normalize_player_name(player1)
+    player2 = normalize_player_name(player2)
+
+    connection = get_db_connection()
+
+    rows = connection.execute(
+        """
+        SELECT DISTINCT
+            m.id,
+            m.match_key,
+            m.match_datetime,
+            m.game_mode
+        FROM matches m
+        INNER JOIN match_players p1
+            ON p1.match_id = m.id
+        INNER JOIN match_players p2
+            ON p2.match_id = m.id
+        WHERE
+            p1.normalized_name = ?
+        AND
+            p2.normalized_name = ?
+        ORDER BY
+            m.match_datetime DESC
+        """,
+        (
+            player1,
+            player2,
+        ),
+    ).fetchall()
+
+    matches = []
+
+    for row in rows:
+
+        players = connection.execute(
+            """
+            SELECT
+                player_name,
+                normalized_name,
+                pokemon_name,
+                result,
+                team_number
+            FROM match_players
+            WHERE match_id = ?
+            ORDER BY team_number, player_name
+            """,
+            (row["id"],),
+        ).fetchall()
+
+        player_list = []
+
+        for p in players:
+
+            role = ""
+
+            if p["normalized_name"] == player1:
+                role = "player1"
+
+            elif p["normalized_name"] == player2:
+                role = "player2"
+
+            player_list.append(
+                {
+                    "player_name": p["player_name"],
+                    "pokemon_name": p["pokemon_name"],
+                    "team_number": p["team_number"],
+                    "result": p["result"],
+                    "role": role,
+                }
+            )
+
+        matches.append(
+            {
+                "match_key": row["match_key"],
+                "match_datetime": row["match_datetime"],
+                "game_mode": row["game_mode"],
+                "players": player_list,
+            }
+        )
+
+    connection.close()
+
+    return {
+        "match_count": len(matches),
+        "matches": matches,
+    }
