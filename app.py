@@ -1,6 +1,10 @@
 from flask import Flask, redirect, render_template, request, url_for
 
-from database import get_database_counts, initialize_database
+from database import (
+    get_database_counts,
+    initialize_database,
+    search_player_matches,
+)
 from json_importer import JsonImportError, import_json_file
 
 
@@ -24,6 +28,11 @@ def search():
     if relation not in {"all", "ally", "opponent"}:
         relation = "all"
 
+    results = []
+
+    if player:
+        results = search_player_matches(player)
+
     return render_template(
         "search.html",
         player=player,
@@ -31,6 +40,7 @@ def search():
         end_date=end_date,
         relation=relation,
         searched=bool(player),
+        results=results,
     )
 
 
@@ -92,9 +102,7 @@ def import_json():
                 error="JSON取込中に予期しないエラーが発生しました。",
             )
         )
-
-
-@app.route("/sources")
+        @app.route("/sources")
 def sources():
     return """
     <h1>UniteAPI取得元</h1>
